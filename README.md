@@ -48,38 +48,7 @@ Cada seção inclui uma **explicação teórica**, **racional** e **código come
 ### O que é C#?
 C# é uma linguagem de programação orientada a objetos desenvolvida pela Microsoft. É usada principalmente com a plataforma .NET para criar aplicações web, desktop, mobile, APIs e muito mais.
 
-### Principais conceitos de POO
-| Conceito         | Definição e Porquê usar                                                | Exemplo Prático                                  |
-|------------------|-------------------------------------------------------------------------|--------------------------------------------------|
-| Encapsulamento   | Esconder detalhes internos e proteger estado                            | `private set;` em propriedades                   |
-| Herança          | Reutilizar código comum em hierarquias                                  | `class Aluno : Pessoa { }`                       |
-| Polimorfismo     | Tratar objetos de diferentes tipos de forma uniforme                    | `virtual` / `override` em métodos                |
-| Abstração        | Representar conceitos do domínio sem revelar complexidade interna        | `interface IPagamento { void Pagar(); }`         |
 
-```csharp
-// Polimorfismo: múltiplos pagamentos
-public interface IPagamento { void Pagar(); }
-public class Pix : IPagamento { public void Pagar() => Console.WriteLine("Pagando via Pix"); }
-public class Boleto : IPagamento { public void Pagar() => Console.WriteLine("Pagando via Boleto"); }
-// Uso:
-IPagamento p = new Pix(); p.Pagar();
-```
-
-```csharp
-// Exemplo de Abstração
-public abstract class Animal {
-    public abstract void EmitirSom();
-}
-
-public class Cachorro : Animal {
-    public override void EmitirSom() {
-        Console.WriteLine("Latindo...");
-    }
-}
-```
-
-
-====================================
 MÓDULO 1 - FUNDAMENTOS DO C#
 ====================================
 - Tipos de dados (int, string, bool, etc.)
@@ -133,7 +102,7 @@ static int Somar(int a, int b)
 }
 
 ```
-====================================
+
 MÓDULO 2 - ESTRUTURAS DE DADOS
 ====================================
 - Tipos primitivos: int, string, bool, float, double, decimal
@@ -156,7 +125,7 @@ List<string> nomes = new List<string> { "Ana", "João", "Lucas" };
 nomes.Add("Maria");
 
 ```
-====================================
+
 MÓDULO 3 - ORIENTAÇÃO A OBJETOS
 ====================================
 - Classes e objetos
@@ -164,6 +133,15 @@ MÓDULO 3 - ORIENTAÇÃO A OBJETOS
 - Herança
 - Polimorfismo
 - Interfaces
+
+
+### Principais conceitos de POO
+| Conceito         | Definição e Porquê usar                                                | Exemplo Prático                                  |
+|------------------|-------------------------------------------------------------------------|--------------------------------------------------|
+| Encapsulamento   | Esconder detalhes internos e proteger estado                            | `private set;` em propriedades                   |
+| Herança          | Reutilizar código comum em hierarquias                                  | `class Aluno : Pessoa { }`                       |
+| Polimorfismo     | Tratar objetos de diferentes tipos de forma uniforme                    | `virtual` / `override` em métodos                |
+| Abstração        | Representar conceitos do domínio sem revelar complexidade interna        | `interface IPagamento { void Pagar(); }`         |
 
 ```
 class Pessoa
@@ -184,7 +162,32 @@ p.Idade = 29;
 p.Apresentar();
 
 ```
-====================================
+
+
+```csharp
+// Polimorfismo: múltiplos pagamentos
+public interface IPagamento { void Pagar(); }
+public class Pix : IPagamento { public void Pagar() => Console.WriteLine("Pagando via Pix"); }
+public class Boleto : IPagamento { public void Pagar() => Console.WriteLine("Pagando via Boleto"); }
+// Uso:
+IPagamento p = new Pix(); p.Pagar();
+```
+
+```csharp
+// Exemplo de Abstração
+public abstract class Animal {
+    public abstract void EmitirSom();
+}
+
+public class Cachorro : Animal {
+    public override void EmitirSom() {
+        Console.WriteLine("Latindo...");
+    }
+}
+```
+
+
+
 MÓDULO 4 - MANIPULAÇÃO DE ARQUIVOS
 ====================================
 ```
@@ -195,7 +198,7 @@ string conteudo = File.ReadAllText("dados.txt");
 Console.WriteLine(conteudo);
 
 ```
-====================================
+
 MÓDULO 5 - LINQ E COLEÇÕES
 ====================================
 - List, Dictionary, HashSet
@@ -211,7 +214,7 @@ using System.Linq;
 var maiores = numeros.Where(n => n > 2).ToList();
 
 ```
-====================================
+
 MÓDULO 6 - ASP.NET BÁSICO
 ====================================
 // Crie um projeto com: dotnet new webapi
@@ -230,7 +233,7 @@ public class ProdutosController : ControllerBase
     public IActionResult Get() => Ok(new[] { "Produto 1", "Produto 2" });
 }
 ```
-====================================
+
 MÓDULO 7 - API REST COM .NET
 ====================================
 // - Uso do Entity Framework
@@ -245,8 +248,8 @@ dotnet new webapi -n MinhaApi
 - Configuração do `Program.cs
 
 
-/*
-====================================
+
+
 MÓDULO 8 - ENTITY FRAMEWORK
 ====================================
 
@@ -352,7 +355,7 @@ dotnet ef database update
 ---
 
 
-====================================
+
  EXERCÍCIOS E PROJETOS
 ====================================
 
@@ -377,7 +380,7 @@ dotnet ef database update
   └── Controllers, Program.cs, Middlewares
 ```
 
-### Exemplo de divisão:
+### Outro Exemplo de divisão:
 - `Cliente` → entidade no Domain
 - `CriarClienteService` → Application
 - `ClienteRepository` → Infrastructure
@@ -518,19 +521,22 @@ services.AddScoped<CriarClienteService>();
 Separa comandos (escrita) de queries (leitura), facilitando manutenção
 
 ```csharp
-// Command
-public record CriarClienteCommand(string Nome) : IRequest<bool>;
-
-// Handler
-public class CriarClienteHandler : IRequestHandler<CriarClienteCommand, bool> {
-  public Task<bool> Handle(CriarClienteCommand cmd, CancellationToken ct) {
-    // lógica aqui
-  }
-}
+public record CreateOrderCommand(int CustomerId) : IRequest<int>;
+```
+- **Query** (leitura)
+```csharp
+public record GetOrderByIdQuery(int Id) : IRequest<OrderDto>;
+```
+- **Handler**: processa command/query
+```csharp
+public class CreateOrderHandler : IRequestHandler<CreateOrderCommand,int> { ... }
 ```
 
-## 🧪 Testes Automatizados com xUnit
+**Prática**: crie query e command para `Produto` e teste usando MediatR.
 
+
+## 🧪 Testes Automatizados com xUnit
+**Por quê?** Garante qualidade e previne regressões.
 ```csharp
 public class ClienteTests {
   [Fact]
@@ -540,9 +546,11 @@ public class ClienteTests {
   }
 }
 ```
+Crie testes unitários e de integração (InMemoryDb).
+---
 
 ## 🧾 Swagger + Versionamento de API
-
+**Swagger** gera documentação interativa.
 ```csharp
 // Swagger no Program.cs
 builder.Services.AddSwaggerGen(c => {
@@ -556,15 +564,29 @@ services.AddApiVersioning(options => {
   options.ReportApiVersions = true;
 });
 ```
+```csharp
+services.AddSwaggerGen(c => {
+  c.SwaggerDoc("v1", new() { Title="API", Version="v1" });
+});
+```
 
 ## 📊 Logging com Serilog
-
+**Por quê?** Logs estruturados facilitam diagnóstico e monitoramento.
 ```csharp
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("logs/api.log")
     .CreateLogger();
 ```
+
+```csharp
+Log.Logger = new LoggerConfiguration()
+  .WriteTo.Console()
+  .WriteTo.File("logs/log-.txt",rollingInterval:Day)
+  .CreateLogger();
+host.UseSerilog();
+```
+**Prática**: injete `ILogger<T>` em Controllers e Services.
 
 ## ☁️ Deploy no Azure App Service
 
@@ -577,39 +599,12 @@ Log.Logger = new LoggerConfiguration()
 
 ### Passos:
 1. Criar projeto no Railway
-2. Conectar ao GitHub
-3. Inserir variáveis de ambiente (Connection String, etc)
+2. Conectar GitHub  
+3. Configurar variáveis (`DOTNET_ENVIRONMENT`,`Jwt__Key`,`ConnectionStrings__Default`)  
+4. Deploy automático a cada push
 
-## ✅ O que o programador C# não pode esquecer:
 
-- `using System.Linq` para consultas
-- `async/await` para métodos assíncronos
-- `IDisposable` para liberar recursos
-- Validação com `FluentValidation`
-- `Automapper` para mapear DTOs
-
-## 🚫 Certo x Errado
-
-### Errado
-```csharp
-public void CriarCliente(string nome) {
-  var cliente = new Cliente();
-  cliente.Nome = nome;
-  _db.Clientes.Add(cliente);
-  _db.SaveChanges();
-}
-```
-
-### Certo
-```csharp
-public class CriarClienteService {
-  public void Executar(string nome) {
-    var cliente = new Cliente(nome);
-    _repo.Adicionar(cliente);
-  }
-}
-```
-## 🏗 Estrutura de Projeto (DDD) <a name="estrutura-de-projeto"></a>
+## 🏗 Exemplo de modelo de Estrutura de Projeto (DDD)
 **Domain-Driven Design** separa responsabilidades:
 
 ```
@@ -620,7 +615,6 @@ src/
 └── API           # Controllers, Middlewares, Program.cs
 ```  
 **Por quê?** Facilita manutenção, teste e evolução independente de infraestrutura.
-
 ---
 
 ## 📦 CRUD Básico com EF Core <a name="crud-basico"></a>
@@ -667,100 +661,30 @@ public async Task<IActionResult> Post([FromBody]Produto p) {
 ```
 
 **Prática**: tente alterar para atualização e exclusão, valide entradas e use DTOs.
-
 ---
 
-## 🔐 Autenticação JWT + Refresh Token <a name="jwt-refresh"></a>
-**Por quê?** Autenticação stateless, escalável, sem sessão no servidor.
 
-1. **Gerar JWT**  
+## 🚫 Certo x Errado
+
+### Errado
 ```csharp
-var tokenHandler = new JwtSecurityTokenHandler();
-var token = tokenHandler.CreateToken(descriptor);
-return tokenHandler.WriteToken(token);
-```
-2. **Refresh Token**: gera token longo e armazena no banco
-3. **Endpoint /refresh**: valida refresh e emite novo JWT
-
-**Exemplo**: implemente classes `AuthController`, `LoginRequest`, `RefreshRequest` com validações e comentários.
-
----
-
-## ⚡ CQRS + MediatR <a name="cqrs-mediatr"></a>
-**Por quê?** Separar leitura e escrita melhora performance e manutenibilidade.
-
-- **Command** (escrita)
-```csharp
-public record CreateOrderCommand(int CustomerId) : IRequest<int>;
-```
-- **Query** (leitura)
-```csharp
-public record GetOrderByIdQuery(int Id) : IRequest<OrderDto>;
-```
-- **Handler**: processa command/query
-```csharp
-public class CreateOrderHandler : IRequestHandler<CreateOrderCommand,int> { ... }
-```
-
-**Prática**: crie query e command para `Produto` e teste usando MediatR.
-
----
-
-## 🧾 Swagger e Versionamento <a name="swagger-versionamento"></a>
-**Swagger** gera documentação interativa.
-```csharp
-services.AddSwaggerGen(c => {
-  c.SwaggerDoc("v1", new() { Title="API", Version="v1" });
-});
-```
-**Versionamento**
-```csharp
-services.AddApiVersioning(o=>{o.DefaultApiVersion=new(1,0);o.ReportApiVersions=true;});
-```
-Use namespaces ou rotas `/api/v{version}/...`.
-
----
-
-## 🔍 Logging com Serilog <a name="logging-serilog"></a>
-**Por quê?** Logs estruturados facilitam diagnóstico e monitoramento.
-```csharp
-Log.Logger = new LoggerConfiguration()
-  .WriteTo.Console()
-  .WriteTo.File("logs/log-.txt",rollingInterval:Day)
-  .CreateLogger();
-host.UseSerilog();
-```
-**Prática**: injete `ILogger<T>` em Controllers e Services.
-
----
-
-## 🧪 Testes Automatizados com xUnit <a name="testes-xunit"></a>
-**Por quê?** Garante qualidade e previne regressões.
-```csharp
-[Fact]
-public async Task AddProduct_Should_Persist() {
-  var repo = new InMemoryProdutoRepository();
-  await repo.AddAsync(new Produto(...));
-  var list = await repo.GetAllAsync();
-  Assert.Single(list);
+public void CriarCliente(string nome) {
+  var cliente = new Cliente();
+  cliente.Nome = nome;
+  _db.Clientes.Add(cliente);
+  _db.SaveChanges();
 }
 ```
-Crie testes unitários e de integração (InMemoryDb).
 
----
-
-## 🚀 Deploy (Azure & Railway) <a name="deploy"></a>
-**Azure**
-1. Criar App Service  
-2. Configurar connection string  
-3. Publicar via VS/CLI `dotnet publish`
-
-**Railway**
-1. Conectar GitHub  
-2. Configurar variáveis (`DOTNET_ENVIRONMENT`,`Jwt__Key`,`ConnectionStrings__Default`)  
-3. Deploy automático a cada push
-
----
+### Certo
+```csharp
+public class CriarClienteService {
+  public void Executar(string nome) {
+    var cliente = new Cliente(nome);
+    _repo.Adicionar(cliente);
+  }
+}
+```
 
 ## 🧰 Conceitos Básicos que você precisa saber:
 
@@ -778,6 +702,14 @@ Crie testes unitários e de integração (InMemoryDb).
 - `.FindAsync(id)` → busca por chave primária
 - `.Where()` e `.Select()` do LINQ
 - `ModelState.IsValid` → valida modelo no POST
+
+  ## ✅ O que o programador C# não pode esquecer:
+
+- `using System.Linq` para consultas
+- `async/await` para métodos assíncronos
+- `IDisposable` para liberar recursos
+- Validação com `FluentValidation`
+- `Automapper` para mapear DTOs
 
 ### Boas práticas:
 - Separe responsabilidades (Controller, Service, Repository)
